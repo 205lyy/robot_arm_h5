@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no, email=no">
+    <title>六轴机械臂科普H5</title>
+    <meta name="description" content="探索工业机器人的奥秘，了解六轴机械臂的原理、应用和发展">
+    <meta name="keywords" content="六轴机械臂,工业机器人,科普,H5">
+    <link rel="stylesheet" href="css/style.css?v=1">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="page-container">
+        <div class="page page-home" id="page-home">
+            <div class="home-header">
+                <h1 class="home-title">六轴机械臂</h1>
+                <p class="home-subtitle">探索工业机器人的奥秘</p>
+            </div>
+            <div class="home-cover">
+                <img src="img/home/cover.svg" alt="机械臂科普" class="cover-img">
+            </div>
+            <div class="feature-tags">
+                <span class="feature-tag">原理动画</span>
+                <span class="feature-tag">仿真演示</span>
+                <span class="feature-tag">知识科普</span>
+                <span class="feature-tag">答题闯关</span>
+            </div>
+            <button class="btn-primary btn-start" onclick="changePage(1)">进入探索</button>
+        </div>
+
+        <div class="page page-animation" id="page-animation">
+            <style>
+                #arm-canvas-container {
+                    width: 100%;
+                    height: 300px;
+                    margin: 0 auto;
+                    position: relative;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    background: #1e222d;
+                }
+                #arm-canvas-container canvas {
+                    width: 100%;
+                    height: 100%;
+                    display: block;
+                }
+                .arm-loading {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    text-align: center;
+                    color: #8a9aa8;
+                }
+                .arm-loading .spinner {
+                    width: 40px;
+                    height: 40px;
+                    border: 3px solid #3a4a5a;
+                    border-top-color: #5b9bd5;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto 10px;
+                }
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+                .arm-error {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    text-align: center;
+                    color: #ff5722;
+                    padding: 20px;
+                    background: rgba(0,0,0,0.5);
+                    border-radius: 8px;
+                }
+                .arm-label {
+                    position: absolute;
+                    background: rgba(0,0,0,0.7);
+                    color: #fff;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    pointer-events: none;
+                    display: none;
+                    z-index: 10;
+                }
+                .arm-hint {
+                    text-align: center;
+                    color: #7b8ca3;
+                    font-size: 12px;
+                    margin-top: 8px;
+                }
+            </style>
+            <div class="page-header">
+                <h2 class="page-title">机械臂交互</h2>
+            </div>
+            <div class="page-content">
+                <div class="anim-status">拖拽旋转 · 悬停标注</div>
+                <div class="anim-view">
+                    <div id="arm-canvas-container">
+                        <div class="arm-loading" id="arm-loading">
+                            <div class="spinner"></div>
+                            <div>加载3D模型...</div>
+                        </div>
+                        <div class="arm-error" id="arm-error" style="display:none;">
+                            <div>加载失败</div>
+                            <div style="font-size:12px;margin-top:8px;">请检查网络连接后刷新重试</div>
+                        </div>
+                        <div class="arm-label" id="arm-label"></div>
+                    </div>
+                    <div class="arm-hint">💡 拖拽旋转视角 · 滚轮缩放 · 悬停查看部件名称</div>
+                </div>
+                <div class="anim-caption">
+                    <p>ABB IRB1200六轴工业机械臂3D模型，支持全方位交互查看。</p>
+                </div>
+                <div class="page-nav-buttons">
+                    <button class="btn-secondary btn-back" onclick="changePage(0)">返回首页</button>
+                    <button class="btn-primary btn-next" onclick="changePage(2)">下一步</button>
+                </div>
+            </div>
+            <script type="module">
+                import * as THREE from 'three';
+                import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+                import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+                var scene, camera, renderer, controls;
+                var raycaster, mouse;
+                var armGroup, parts = [];
+                var labelEl = document.getElementById('arm-label');
+                var containerEl = document.getElementById('arm-canvas-container');
+                var loadingEl = document.getElementById('arm-loading');
+                var errorEl = document.getElementById('arm-error');
+                var isPaused = false;
+                var mixer = null;
+
+                function init() {
+                    try {
+                        scene = new THREE.Scene();
+                        scene.background = new THREE.Color(0x1e222d);
+
+                        camera = new THREE.PerspectiveCamera(60, containerEl.clientWidth / containerEl.clientHeight, 0.1, 1000);
+                        camera.position.set(3, 2, 4);
+
+                        renderer = new THREE.WebGLRenderer({ antialias: true });
+                        renderer.setSize(containerEl.clientWidth, containerEl.clientHeight);
+                        renderer.setPixelRatio(window.devicePixelRatio);
+                        renderer.shadowMap.enabled = true;
+                        containerEl.appendChild(renderer.domElement);
+
+                        controls = new OrbitControls(camera, renderer.domElement);
+                        controls.enableDamping = true;
+                        controls.dampingFactor = 0.05;
+                        controls.enablePan = false;
+                        controls.minDistance = 1.5;
+                        controls.maxDistance = 10;
+                        controls.maxPolarAngle = Math.PI / 2 - 0.1;
+
+                        var ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+                        scene.add(ambientLight);
+
+                        var directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                        directionalLight.position.set(5, 10, 7);
+                        directionalLight.castShadow = true;
+                        scene.add(directionalLight);
+
+                        var pointLight = new THREE.PointLight(0x5b9bd5, 0.5);
+                        pointLight.position.set(-3, 5, -3);
+                        scene.add(pointLight);
+
+                        var gridHelper = new THREE.GridHelper(10, 10, 0x3a4a5a, 0x2e3440);
+                        scene.add(gridHelper);
+
+                        raycaster = new THREE.Raycaster();
+                        mouse = new THREE.Vector2();
+
+                        renderer.domElement.addEventListener('mousemove', onMouseMove);
+                        renderer.domElement.addEventListener('touchmove', onTouchMove);
+                        renderer.domElement.addEventListener('mouseleave', onMouseLeave);
+
+                        window.addEventListener('resize', onResize);
+
+                        loadModel();
+                    } catch (e) {
+                        console.error('Three.js初始化失败:', e);
+                        loadingEl.style.display = 'none';
+                        errorEl.style.display = 'block';
+                    }
+                }
+
+                function loadModel() {
+                    console.log('开始加载模型...');
+                    var loader = new GLTFLoader();
+                    var modelPath = 'models/abb1200.glb';
+                    
+                    loader.load(modelPath, function(gltf) {
+                        console.log('模型加载成功！');
+                        console.log('模型场景:', gltf.scene);
+                        console.log('模型动画数量:', gltf.animations ? gltf.animations.length : 0);
+                        
+                        armGroup = gltf.scene;
+                        
+                        armGroup.traverse(function(child) {
+                            if (child.isMesh) {
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                                if (!child.name) {
+                                    child.name = '部件';
+                                }
+                                parts.push(child);
+                                console.log('部件:', child.name, '位置:', child.position);
+                            }
+                        });
+
+                        var box = new THREE.Box3().setFromObject(armGroup);
+                        var center = box.getCenter(new THREE.Vector3());
+                        var size = box.getSize(new THREE.Vector3());
+                        console.log('模型包围盒中心:', center);
+                        console.log('模型尺寸:', size);
+
+                        armGroup.position.sub(center);
+                        
+                        var maxDim = Math.max(size.x, size.y, size.z);
+                        var scale = 2 / maxDim;
+                        armGroup.scale.set(scale, scale, scale);
+                        console.log('自动缩放比例:', scale);
+
+                        armGroup.position.y = size.y * scale / 2;
+
+                        scene.add(armGroup);
+
+                        if (gltf.animations && gltf.animations.length > 0) {
+                            mixer = new THREE.AnimationMixer(armGroup);
+                            var action = mixer.clipAction(gltf.animations[0]);
+                            action.play();
+                            console.log('播放动画:', gltf.animations[0].name);
+                        }
+
+                        addTargetObject();
+
+                        loadingEl.style.display = 'none';
+                        animate();
+                    }, function(xhr) {
+                        console.log('模型加载进度:', Math.round(xhr.loaded / xhr.total * 100) + '%');
+                    }, function(error) {
+                        console.error('GLB模型加载失败:', error);
+                        loadingEl.style.display = 'none';
+                        errorEl.style.display = 'block';
+                        errorEl.innerHTML = '<div>模型加载失败</div><div style="font-size:12px;margin-top:8px;">错误信息: ' + (error.message || '未知错误') + '</div><div style="font-size:12px;margin-top:4px;">请检查文件路径是否正确</div>';
+                    });
+                }
+
+                function addTargetObject() {
+                    var baseColor = 0x3a4a5a;
+
+                    var table = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.8, 0.05, 0.4),
+                        new THREE.MeshPhongMaterial({ color: baseColor })
+                    );
+                    table.position.set(1.5, 0.025, 0);
+                    table.name = '工作台';
+                    table.receiveShadow = true;
+                    parts.push(table);
+                    scene.add(table);
+
+                    var targetObject = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.25, 0.25, 0.25),
+                        new THREE.MeshPhongMaterial({ color: 0x4fc3f7 })
+                    );
+                    targetObject.position.set(1.5, 0.125, 0);
+                    targetObject.name = '目标方块';
+                    targetObject.castShadow = true;
+                    targetObject.receiveShadow = true;
+                    parts.push(targetObject);
+                    scene.add(targetObject);
+                }
+
+                function onMouseMove(event) {
+                    var rect = renderer.domElement.getBoundingClientRect();
+                    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                    checkIntersection();
+                }
+
+                function onTouchMove(event) {
+                    if (event.touches.length === 1) {
+                        var rect = renderer.domElement.getBoundingClientRect();
+                        mouse.x = ((event.touches[0].clientX - rect.left) / rect.width) * 2 - 1;
+                        mouse.y = -((event.touches[0].clientY - rect.top) / rect.height) * 2 + 1;
+                        checkIntersection();
+                    }
+                }
+
+                function onMouseLeave() {
+                    labelEl.style.display = 'none';
+                }
+
+                function checkIntersection() {
+                    raycaster.setFromCamera(mouse, camera);
+                    var intersects = raycaster.intersectObjects(parts);
+                    if (intersects.length > 0) {
+                        var intersect = intersects[0];
+                        labelEl.textContent = intersect.object.name;
+                        var rect = renderer.domElement.getBoundingClientRect();
+                        labelEl.style.left = (mouse.x * rect.width / 2 + rect.width / 2) + 'px';
+                        labelEl.style.top = (-mouse.y * rect.height / 2 + rect.height / 2 - 30) + 'px';
+                        labelEl.style.display = 'block';
+                        renderer.domElement.style.cursor = 'pointer';
+                    } else {
+                        labelEl.style.display = 'none';
+                        renderer.domElement.style.cursor = 'default';
+                    }
+                }
+
+                function onResize() {
+                    if (!camera || !renderer || !containerEl) return;
+                    camera.aspect = containerEl.clientWidth / containerEl.clientHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(containerEl.clientWidth, containerEl.clientHeight);
+                }
+
+                function animate() {
+                    if (isPaused) return;
+                    requestAnimationFrame(animate);
+                    if (controls) {
+                        controls.update();
+                    }
+
+                    if (mixer) {
+                        mixer.update(0.016);
+                    }
+
+                    renderer.render(scene, camera);
+                }
+
+                window.anim_resumeAnimation = function() {
+                    isPaused = false;
+                    animate();
+                };
+
+                window.anim_pauseAnimation = function() {
+                    isPaused = true;
+                };
+
+                window.__robotArmInit = init;
+
+                document.addEventListener('visibilitychange', function() {
+                    if (document.hidden) window.anim_pauseAnimation();
+                    else window.anim_resumeAnimation();
+                });
+            </script>
+        </div>
+
+        <div class="page page-simulation" id="page-simulation">
+            <div class="page-header">
+                <h2 class="page-title">工业仿真演示</h2>
+            </div>
+            <div class="page-content">
+                <h3 class="sim-title">工业级仿真演示</h3>
+                <p class="sim-subtitle">基于RobotStudio工业仿真软件制作，还原真实机械臂运动效果</p>
+                <div class="sim-video-wrapper">
+                    <video id="sim-video" class="sim-video" controls playsinline muted preload="metadata">
+                        <source src="video/video_joint.mp4" type="video/mp4">
+                        您的浏览器不支持HTML5视频播放
+                    </video>
+                    <div class="sim-placeholder" style="display:none;">
+                        <div class="sim-placeholder-icon">🎬</div>
+                        <div class="sim-placeholder-text">视频资源加载失败<br>请检查网络连接或稍后重试</div>
+                    </div>
+                </div>
+                <div class="sim-tabs">
+                    <button class="sim-tab-btn active" data-index="0" onclick="sim_switchVideo(0)">单关节演示</button>
+                    <button class="sim-tab-btn" data-index="1" onclick="sim_switchVideo(1)">完整工作流程</button>
+                    <button class="sim-tab-btn" data-index="2" onclick="sim_switchVideo(2)">多角度展示</button>
+                </div>
+                <div class="page-nav-buttons">
+                    <button class="btn-secondary btn-back" onclick="changePage(1)">上一步</button>
+                    <button class="btn-primary btn-next" onclick="changePage(3)">下一步</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="page page-knowledge" id="page-knowledge">
+            <div class="page-header">
+                <h2 class="page-title">知识讲解</h2>
+            </div>
+            <div class="page-content">
+                <div class="knowledge-tabs">
+                    <button class="knowledge-tab-btn tab-btn active" data-tab="0" onclick="knowledge_switchTab(0)">自由度</button>
+                    <button class="knowledge-tab-btn tab-btn" data-tab="1" onclick="knowledge_switchTab(1)">关节类型</button>
+                    <button class="knowledge-tab-btn tab-btn" data-tab="2" onclick="knowledge_switchTab(2)">控制方式</button>
+                    <button class="knowledge-tab-btn tab-btn" data-tab="3" onclick="knowledge_switchTab(3)">应用场景</button>
+                </div>
+                <div id="knowledge-content" class="knowledge-content"></div>
+                <div class="page-nav-buttons">
+                    <button class="btn-secondary btn-back" onclick="changePage(2)">上一步</button>
+                    <button class="btn-primary btn-next" onclick="changePage(4)">下一步</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="page page-quiz" id="page-quiz">
+            <div class="page-header">
+                <h2 class="page-title">答题闯关</h2>
+            </div>
+            <div class="page-content">
+                <div class="quiz-progress">
+                    <span class="progress-text">第 <span id="quiz-progress">1</span> 题</span>
+                </div>
+                <div id="quiz-box" class="quiz-box">
+                    <div id="quiz-question" class="quiz-question"></div>
+                    <div id="quiz-options" class="quiz-options"></div>
+                    <div id="quiz-card" class="quiz-card"></div>
+                </div>
+                <div class="page-nav-buttons">
+                    <button class="btn-secondary btn-back" onclick="changePage(3)">上一步</button>
+                    <button class="btn-primary btn-next" id="quiz-next-btn" onclick="quiz_nextQuestion()">下一题</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="page page-anhui" id="page-anhui">
+            <div class="page-header">
+                <h2 class="page-title">安徽智造</h2>
+            </div>
+            <div class="page-content">
+                <div class="anhui-cards">
+                    <div class="anhui-card">
+                        <div class="anhui-card-value">500+</div>
+                        <div class="anhui-card-label">机器人企业数量</div>
+                    </div>
+                    <div class="anhui-card">
+                        <div class="anhui-card-value">600亿</div>
+                        <div class="anhui-card-label">年产值规模</div>
+                    </div>
+                    <div class="anhui-card">
+                        <div class="anhui-card-value">全国第五</div>
+                        <div class="anhui-card-label">产业竞争力排名</div>
+                    </div>
+                    <div class="anhui-card">
+                        <div class="anhui-card-value">4.1万台</div>
+                        <div class="anhui-card-label">工业机器人产量</div>
+                    </div>
+                    <div class="anhui-card">
+                        <div class="anhui-card-value">26家</div>
+                        <div class="anhui-card-label">国家级专精特新企业</div>
+                    </div>
+                    <div class="anhui-card">
+                        <div class="anhui-card-value">6家</div>
+                        <div class="anhui-card-label">上市企业</div>
+                    </div>
+                    <div class="anhui-card">
+                        <div class="anhui-card-value">89%</div>
+                        <div class="anhui-card-label">核心零部件国产化率</div>
+                    </div>
+                    <div class="anhui-card">
+                        <div class="anhui-card-value">100+</div>
+                        <div class="anhui-card-label">关键技术突破</div>
+                    </div>
+                    <div class="anhui-card">
+                        <div class="anhui-card-value">1000亿</div>
+                        <div class="anhui-card-label">2027年目标产值</div>
+                    </div>
+                </div>
+                <div class="knowledge-tabs">
+                    <button class="anhui-tab-btn tab-btn active" data-tab="0" onclick="anhui_switchTab(0)">重点城市</button>
+                    <button class="anhui-tab-btn tab-btn" data-tab="1" onclick="anhui_switchTab(1)">龙头企业</button>
+                    <button class="anhui-tab-btn tab-btn" data-tab="2" onclick="anhui_switchTab(2)">产业链</button>
+                    <button class="anhui-tab-btn tab-btn" data-tab="3" onclick="anhui_switchTab(3)">发展规划</button>
+                </div>
+                <div id="anhui-content" class="anhui-content"></div>
+                <div class="page-nav-buttons">
+                    <button class="btn-secondary btn-back" onclick="changePage(4)">上一步</button>
+                    <button class="btn-primary btn-next" onclick="changePage(6)">完成探索</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="page page-end" id="page-end">
+            <div class="end-content">
+                <div class="end-icon">🎊</div>
+                <h2 class="end-title">恭喜完成探索！</h2>
+                <p class="end-text">您已掌握六轴机械臂的基础知识</p>
+                <p class="end-summary">机械臂科普之旅圆满结束，希望您对工业机器人有了更深入的了解。</p>
+                <img src="img/end/end.svg" alt="机械臂示意图" class="end-img">
+                <button class="btn-primary btn-restart" onclick="changePage(0)">重新探索</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/animation.js"></script>
+    <script src="js/simulation.js"></script>
+    <script src="js/knowledge.js"></script>
+    <script src="js/quizDatabase.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/anhui.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <defs>
+    <linearGradient id="a4Grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" fill="#1e293b"/>
+  
+  <rect x="25" y="30" width="55" height="40" rx="6" fill="rgba(59,130,246,0.1)" stroke="#3b82f6" stroke-width="2"/>
+  <text x="52" y="48" font-family="sans-serif" font-size="10" fill="#3b82f6" text-anchor="middle">核心零部件</text>
+  <text x="52" y="62" font-family="sans-serif" font-size="8" fill="#94a3b8" text-anchor="middle">自主化率提升</text>
+  <rect x="35" y="68" width="35" height="8" rx="2" fill="rgba(59,130,246,0.3)"/>
+  <text x="52" y="74" font-family="sans-serif" font-size="6" fill="#60a5fa" text-anchor="middle">目标：80%</text>
+  
+  <rect x="100" y="30" width="55" height="40" rx="6" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="2"/>
+  <text x="127" y="48" font-family="sans-serif" font-size="10" fill="#f59e0b" text-anchor="middle">工业应用</text>
+  <text x="127" y="62" font-family="sans-serif" font-size="8" fill="#94a3b8" text-anchor="middle">制造业广泛应用</text>
+  <rect x="110" y="68" width="35" height="8" rx="2" fill="rgba(245,158,11,0.3)"/>
+  <text x="127" y="74" font-family="sans-serif" font-size="6" fill="#fcd34d" text-anchor="middle">2025</text>
+  
+  <rect x="25" y="80" width="55" height="40" rx="6" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="52" y="98" font-family="sans-serif" font-size="10" fill="#8b5cf6" text-anchor="middle">服务机器人</text>
+  <text x="52" y="112" font-family="sans-serif" font-size="8" fill="#94a3b8" text-anchor="middle">培育新兴市场</text>
+  <rect x="35" y="118" width="35" height="8" rx="2" fill="rgba(139,92,246,0.3)"/>
+  <text x="52" y="124" font-family="sans-serif" font-size="6" fill="#a78bfa" text-anchor="middle">创新</text>
+  
+  <rect x="100" y="80" width="55" height="40" rx="6" fill="rgba(34,197,94,0.1)" stroke="#22c55e" stroke-width="2"/>
+  <text x="127" y="98" font-family="sans-serif" font-size="10" fill="#22c55e" text-anchor="middle">产学研合作</text>
+  <text x="127" y="112" font-family="sans-serif" font-size="8" fill="#94a3b8" text-anchor="middle">人才培养</text>
+  <rect x="110" y="118" width="35" height="8" rx="2" fill="rgba(34,197,94,0.3)"/>
+  <text x="127" y="124" font-family="sans-serif" font-size="6" fill="#4ade80" text-anchor="middle">人才</text>
+  
+  <circle cx="90" cy="150" r="20" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+  <text x="90" y="147" font-family="sans-serif" font-size="14" fill="#f59e0b" text-anchor="middle">500亿</text>
+  <text x="90" y="162" font-family="sans-serif" font-size="8" fill="#94a3b8" text-anchor="middle">产业规模目标</text>
+  
+  <text x="90" y="178" font-family="sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">发展规划</text>
+</svg>

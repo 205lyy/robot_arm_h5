@@ -1,0 +1,37 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs>
+<linearGradient id="s3ArmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+<stop offset="0%" style="stop-color:#8b5cf6"/>
+<stop offset="100%" style="stop-color:#a78bfa"/>
+</linearGradient>
+</defs>
+<rect width="512" height="512" fill="#1e293b"/>
+<circle cx="256" cy="420" r="40" fill="#334155" stroke="#8b5cf6" stroke-width="2"/>
+<circle cx="256" cy="420" r="22" fill="#1e293b" stroke="#8b5cf6" stroke-width="1"/>
+<rect x="250" y="320" width="12" height="100" rx="4" fill="url(#s3ArmGrad)"/>
+<circle cx="256" cy="320" r="5" fill="#a78bfa"/>
+<g transform="translate(256, 320)">
+<animateTransform attributeName="transform" type="rotate" from="-30" to="-60" dur="2s" repeatCount="indefinite"/>
+<rect x="-6" y="-100" width="12" height="100" rx="4" fill="url(#s3ArmGrad)"/>
+<circle cx="0" cy="-100" r="5" fill="#c4b5fd"/>
+<g transform="translate(0, -100)">
+<animateTransform attributeName="transform" type="rotate" from="20" to="45" dur="2s" repeatCount="indefinite"/>
+<rect x="-4" y="-80" width="8" height="80" rx="3" fill="url(#s3ArmGrad)"/>
+<circle cx="0" cy="-80" r="4" fill="#a78bfa"/>
+<rect x="-3" y="-50" width="6" height="50" rx="2" fill="#c4b5fd"/>
+<circle cx="0" cy="-50" r="3" fill="#8b5cf6"/>
+<rect x="-2" y="-25" width="4" height="25" rx="2" fill="#a78bfa"/>
+<circle cx="0" cy="-25" r="2" fill="#c4b5fd"/>
+<rect x="-3" y="-10" width="6" height="10" rx="1" fill="#22c55e"/>
+<circle cx="0" cy="-10" r="4" fill="none" stroke="#22c55e" stroke-width="2"/>
+</g>
+</g>
+<path d="M256 320 L280 250 L300 180" stroke="rgba(139,92,246,0.4)" stroke-width="3" stroke-dasharray="6,3" fill="none">
+<animate attributeName="stroke-dashoffset" from="0" to="18" dur="1.5s" repeatCount="indefinite"/>
+</path>
+<circle cx="300" cy="180" r="6" fill="#8b5cf6">
+<animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite"/>
+</circle>
+<text x="320" y="185" font-family="sans-serif" font-size="12" fill="#8b5cf6">伸展方向</text>
+<text x="256" y="485" font-family="sans-serif" font-size="18" fill="#94a3b8" text-anchor="middle">步骤3：臂部伸展</text>
+</svg>

@@ -1,0 +1,88 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="armGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#00bcd4" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#0097a7" stop-opacity="0.8"/>
+    </linearGradient>
+    <linearGradient id="baseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#424242"/>
+      <stop offset="100%" stop-color="#212121"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="800" height="600" fill="#0a1628"/>
+
+  <g class="robot-base">
+    <rect x="300" y="520" width="200" height="60" rx="8" fill="url(#baseGradient)" stroke="#616161" stroke-width="2"/>
+    <rect x="320" y="530" width="160" height="40" rx="4" fill="#37474f" stroke="#455a64" stroke-width="1"/>
+    <circle cx="350" cy="550" r="6" fill="#616161"/>
+    <circle cx="450" cy="550" r="6" fill="#616161"/>
+    <rect x="340" y="555" width="120" height="3" rx="1" fill="#424242"/>
+  </g>
+
+  <g class="axis1">
+    <rect x="340" y="480" width="120" height="40" rx="6" fill="#00e5ff" stroke="#00bcd4" stroke-width="2"/>
+    <rect x="350" y="490" width="100" height="20" rx="3" fill="#0097a7" stroke="#006064" stroke-width="1"/>
+    <circle cx="400" cy="500" r="8" fill="#00e5ff" stroke="#00bcd4" stroke-width="2"/>
+  </g>
+
+  <g class="axis2">
+    <rect x="370" y="380" width="60" height="100" rx="6" fill="url(#armGradient)" stroke="#00e5ff" stroke-width="2"/>
+    <rect x="380" y="390" width="40" height="80" rx="3" fill="#006064" stroke="#00e5ff" stroke-width="1"/>
+    <circle cx="400" cy="480" r="12" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+    <circle cx="400" cy="380" r="10" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+  </g>
+
+  <g class="axis3">
+    <rect x="375" y="280" width="50" height="100" rx="5" fill="url(#armGradient)" stroke="#00e5ff" stroke-width="2"/>
+    <rect x="383" y="290" width="34" height="80" rx="3" fill="#006064" stroke="#00e5ff" stroke-width="1"/>
+    <circle cx="400" cy="380" r="10" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+    <circle cx="400" cy="280" r="8" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+  </g>
+
+  <g class="axis4">
+    <rect x="390" y="230" width="20" height="50" rx="4" fill="url(#armGradient)" stroke="#00e5ff" stroke-width="2"/>
+    <rect x="394" y="240" width="12" height="30" rx="2" fill="#006064" stroke="#00e5ff" stroke-width="1"/>
+    <circle cx="400" cy="280" r="8" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+    <circle cx="400" cy="230" r="6" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+  </g>
+
+  <g class="axis5">
+    <rect x="392" y="180" width="16" height="50" rx="3" fill="url(#armGradient)" stroke="#00e5ff" stroke-width="2"/>
+    <rect x="396" y="190" width="8" height="30" rx="2" fill="#006064" stroke="#00e5ff" stroke-width="1"/>
+    <circle cx="400" cy="230" r="6" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+    <circle cx="400" cy="180" r="5" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+  </g>
+
+  <g class="axis6">
+    <rect x="393" y="145" width="14" height="35" rx="3" fill="url(#armGradient)" stroke="#00e5ff" stroke-width="2"/>
+    <rect x="397" y="155" width="6" height="15" rx="2" fill="#006064" stroke="#00e5ff" stroke-width="1"/>
+    <circle cx="400" cy="180" r="5" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+    <circle cx="400" cy="145" r="6" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+  </g>
+
+  <g class="gripper">
+    <rect x="380" y="100" width="40" height="45" rx="4" fill="#00bcd4" stroke="#00e5ff" stroke-width="2"/>
+    <rect x="385" y="110" width="30" height="25" rx="2" fill="#006064" stroke="#00e5ff" stroke-width="1"/>
+    <rect x="385" y="135" width="8" height="15" rx="2" fill="#00e5ff" stroke="#00bcd4" stroke-width="1"/>
+    <rect x="407" y="135" width="8" height="15" rx="2" fill="#00e5ff" stroke="#00bcd4" stroke-width="1"/>
+    <rect x="390" y="145" width="20" height="5" rx="1" fill="#00bcd4" stroke="#00e5ff" stroke-width="1"/>
+    <circle cx="389" cy="145" r="3" fill="#00e5ff"/>
+    <circle cx="411" cy="145" r="3" fill="#00e5ff"/>
+  </g>
+
+  <circle cx="400" cy="500" r="4" fill="#ff5722" opacity="0.8"/>
+  <circle cx="400" cy="380" r="4" fill="#ff5722" opacity="0.8"/>
+  <circle cx="400" cy="280" r="4" fill="#ff5722" opacity="0.8"/>
+  <circle cx="400" cy="230" r="4" fill="#ff5722" opacity="0.8"/>
+  <circle cx="400" cy="180" r="4" fill="#ff5722" opacity="0.8"/>
+  <circle cx="400" cy="145" r="4" fill="#ff5722" opacity="0.8"/>
+</svg>

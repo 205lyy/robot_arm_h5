@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机械臂动画测试</title>
+    <style>
+        body { margin: 0; background: #1a1e2b; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: sans-serif; }
+        .container { width: 100%; max-width: 600px; }
+        svg { width: 100%; height: auto; background: #1e222d; border-radius: 12px; }
+        .controls { display: flex; gap: 10px; margin: 20px 0; justify-content: center; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #3a4050; color: white; border: none; border-radius: 8px; }
+        button:disabled { opacity: 0.4; }
+        .step-indicator { color: #b0c4de; text-align: center; font-size: 18px; }
+        .caption { color: #7b8ca3; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="step-indicator">步骤 1/5</div>
+        <div class="controls">
+            <button id="prev" onclick="anim_prevStep()" disabled>上一步</button>
+            <button id="next" onclick="anim_nextStep()">下一步</button>
+        </div>
+        <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#2e3440" stroke-width="0.5"/>
+                </pattern>
+                <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#5a6b7a"/>
+                    <stop offset="50%" stop-color="#8a9aa8"/>
+                    <stop offset="100%" stop-color="#4a5a6a"/>
+                </linearGradient>
+                <linearGradient id="darkMetal" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#3a4a5a"/>
+                    <stop offset="50%" stop-color="#5a6b7a"/>
+                    <stop offset="100%" stop-color="#2a3a4a"/>
+                </linearGradient>
+            </defs>
+            <rect width="800" height="500" fill="#1e222d"/>
+            <rect width="800" height="500" fill="url(#grid)"/>
+            
+            <!-- 底座 -->
+            <g id="anim-base">
+                <rect x="340" y="440" width="120" height="30" rx="6" fill="url(#darkMetal)" stroke="#2a2e38" stroke-width="2"/>
+                <circle cx="400" cy="440" r="38" fill="#3a4a5a" stroke="#5a6b7a" stroke-width="2"/>
+            </g>
+            
+            <!-- 工作台与目标 -->
+            <rect x="530" y="360" width="60" height="12" rx="3" fill="#3a4a5a" stroke="#5a6b7a" stroke-width="1.5"/>
+            <rect id="target-object" x="528" y="330" width="24" height="24" rx="3" fill="#4fc3f7" stroke="#0288d1" stroke-width="2"/>
+            
+            <!-- 第1轴 -->
+            <g id="anim-axis1" data-pivot="400,440">
+                <rect x="375" y="380" width="50" height="60" rx="10" fill="url(#metalGrad)" stroke="#2a2e38" stroke-width="2"/>
+                <circle cx="400" cy="440" r="10" fill="#c0c8d0"/>
+                
+                <!-- 第2轴 -->
+                <g id="anim-axis2" data-pivot="400,360">
+                    <rect x="390" y="260" width="20" height="100" rx="6" fill="url(#metalGrad)" stroke="#2a2e38" stroke-width="2"/>
+                    <circle cx="400" cy="360" r="14" fill="#ff9800" stroke="#ff5722" stroke-width="2"/>
+                    
+                    <!-- 第3轴 -->
+                    <g id="anim-axis3" data-pivot="400,260">
+                        <rect x="400" y="252" width="120" height="16" rx="5" fill="url(#metalGrad)" stroke="#2a2e38" stroke-width="2"/>
+                        <circle cx="400" cy="260" r="12" fill="#ff9800" stroke="#ff5722" stroke-width="2"/>
+                        
+                        <!-- 第4轴 -->
+                        <g id="anim-axis4" data-pivot="520,260">
+                            <rect x="514" y="252" width="18" height="16" rx="3" fill="url(#darkMetal)" stroke="#2a2e38" stroke-width="2"/>
+                            <circle cx="520" cy="260" r="8" fill="#ff9800" stroke="#ff5722" stroke-width="2"/>
+                            
+                            <!-- 第5轴 -->
+                            <g id="anim-axis5" data-pivot="520,260">
+                                <rect x="516" y="260" width="8" height="40" rx="3" fill="url(#metalGrad)" stroke="#2a2e38" stroke-width="2"/>
+                                <circle cx="520" cy="260" r="6" fill="#ff9800" stroke="#ff5722" stroke-width="2"/>
+                                
+                                <!-- 第6轴 -->
+                                <g id="anim-axis6" data-pivot="520,300">
+                                    <rect x="516" y="300" width="8" height="16" rx="2" fill="#5a6b7a" stroke="#7a8a9a" stroke-width="1"/>
+                                    <circle cx="520" cy="300" r="5" fill="#ff9800" stroke="#ff5722" stroke-width="2"/>
+                                    
+                                    <!-- 夹爪 -->
+                                    <g id="anim-gripper">
+                                        <rect x="514" y="312" width="12" height="8" rx="2" fill="#5a6b7a" stroke="#7a8a9a" stroke-width="1"/>
+                                        <g id="gripper-left">
+                                            <rect x="502" y="300" width="6" height="24" rx="2" fill="#8a9aa8" stroke="#5a6b7a" stroke-width="1"/>
+                                        </g>
+                                        <g id="gripper-right">
+                                            <rect x="532" y="300" width="6" height="24" rx="2" fill="#8a9aa8" stroke="#5a6b7a" stroke-width="1"/>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </svg>
+        <div class="caption" id="caption">机械臂所有关节归零，夹爪张开，等待任务指令。</div>
+    </div>
+
+    <script>
+        (function() {
+            var step = 0;
+            var animating = false;
+            var duration = 700;
+            var startTime = 0;
+            var from = [0, 0, 0, 0, 0, 0, 0];
+            var to = [0, 0, 0, 0, 0, 0, 0];
+            var joints = [];
+            var pivots = [];
+            var timer = null;
+
+            var seq = [
+                { angles: [0, 0, 0, 0, 0, 0], grip: 0, desc: '机械臂所有关节归零，夹爪张开，等待任务指令。' },
+                { angles: [30, 0, 0, 0, 0, 0], grip: 0, desc: '第1轴水平旋转30°，对准目标物体方向。' },
+                { angles: [30, -50, 55, 0, 0, 0], grip: 0, desc: '第2轴抬起、第3轴前摆，机械臂伸展。' },
+                { angles: [30, -65, 90, 90, -90, 0], grip: 0, desc: '腕部三关节调整，夹爪竖直向下对准方块。' },
+                { angles: [30, -72, 98, 90, -90, 0], grip: -25, desc: '夹爪闭合，成功抓取目标方块。' }
+            ];
+
+            function init() {
+                console.log('init() called');
+                var ids = ['anim-axis1', 'anim-axis2', 'anim-axis3', 'anim-axis4', 'anim-axis5', 'anim-axis6'];
+                for (var i = 0; i < 6; i++) {
+                    joints[i] = document.getElementById(ids[i]);
+                    console.log('joint[' + i + ']:', joints[i]);
+                    var p = joints[i].getAttribute('data-pivot').split(',');
+                    pivots[i] = { x: +p[0], y: +p[1] };
+                }
+                jump(0);
+                startLoop();
+            }
+
+            function jump(n) {
+                step = n;
+                var s = seq[n];
+                for (var i = 0; i < 6; i++) {
+                    to[i] = s.angles[i];
+                    from[i] = to[i];
+                    setJointRotate(i, to[i]);
+                }
+                to[6] = s.grip;
+                from[6] = to[6];
+                setGrip(to[6]);
+                updateUI();
+            }
+
+            function setJointRotate(index, angle) {
+                var el = joints[index];
+                var pivot = pivots[index];
+                el.setAttribute('transform', 'rotate(' + angle + ', ' + pivot.x + ', ' + pivot.y + ')');
+            }
+
+            function setGrip(a) {
+                var l = document.getElementById('gripper-left');
+                var r = document.getElementById('gripper-right');
+                if (l) l.setAttribute('transform', 'rotate(' + a + ', 505, 324)');
+                if (r) r.setAttribute('transform', 'rotate(' + (-a) + ', 535, 324)');
+            }
+
+            function move(dir) {
+                console.log('move(' + dir + ') called, step:', step, 'animating:', animating);
+                var next = step + dir;
+                if (next < 0 || next >= seq.length) return;
+                if (animating) return;
+
+                step = next;
+                var s = seq[step];
+                for (var i = 0; i < 6; i++) {
+                    from[i] = to[i];
+                    to[i] = s.angles[i];
+                }
+                from[6] = to[6];
+                to[6] = s.grip;
+                startTime = Date.now();
+                animating = true;
+                updateUI();
+            }
+
+            function startLoop() {
+                if (timer) return;
+                timer = requestAnimationFrame(update);
+            }
+
+            function update() {
+                if (animating) {
+                    var t = Date.now() - startTime;
+                    var p = Math.min(t / duration, 1);
+                    var e = 1 - Math.pow(1 - p, 3);
+                    for (var i = 0; i < 6; i++) {
+                        var a = from[i] + (to[i] - from[i]) * e;
+                        setJointRotate(i, a);
+                    }
+                    var ga = from[6] + (to[6] - from[6]) * e;
+                    setGrip(ga);
+                    if (p >= 1) animating = false;
+                }
+                timer = requestAnimationFrame(update);
+            }
+
+            function updateUI() {
+                var s = seq[step];
+                document.querySelector('.step-indicator').textContent = '步骤 ' + (step + 1) + '/' + seq.length;
+                document.getElementById('caption').textContent = s.desc;
+                document.getElementById('prev').disabled = step <= 0;
+                document.getElementById('next').disabled = step >= seq.length - 1;
+            }
+
+            window.anim_prevStep = function() { move(-1); };
+            window.anim_nextStep = function() { move(1); };
+
+            window.onload = init;
+        })();
+    </script>
+</body>
+</html>
