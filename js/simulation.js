@@ -232,7 +232,8 @@ function sim_showQuiz(quizData) {
         '<div class="sim-quiz-options">';
     
     quizData.options.forEach(function(opt, index) {
-        html += '<div class="sim-quiz-option" data-index="' + index + '" onclick="sim_selectAnswer(' + index + ', ' + quizData.answer + ', \'' + quizData.explanation + '\', this)">' + opt + '</div>';
+        var escapedExplanation = quizData.explanation.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        html += '<div class="sim-quiz-option" data-index="' + index + '" onclick="sim_selectAnswer(' + index + ', ' + quizData.answer + ', \'' + escapedExplanation + '\', this)">' + opt + '</div>';
     });
     
     html += '</div>' +
