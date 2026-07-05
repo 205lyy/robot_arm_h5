@@ -274,6 +274,16 @@ document.addEventListener('touchstart', function(event) {
 }, { passive: false });
 
 document.addEventListener('touchmove', function(event) {
+    var target = event.target;
+    while (target) {
+        if (target.classList && target.classList.contains('page-content')) {
+            return;
+        }
+        if (target.tagName === 'HTML' || target.tagName === 'BODY') {
+            break;
+        }
+        target = target.parentNode;
+    }
     event.preventDefault();
 }, { passive: false });
 

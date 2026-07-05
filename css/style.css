@@ -21,6 +21,8 @@ html, body {
     color: #fff;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    overscroll-behavior: none;
+    touch-action: none;
 }
 
 /* 去除移动端点击高亮 */
@@ -86,6 +88,7 @@ button, a {
     overflow-x: hidden;
     padding: 16px 24px;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
 }
 
 /* ------------------ 按钮样式 ------------------ */
@@ -275,6 +278,11 @@ button, a {
     overflow: hidden;
     margin-bottom: 16px;
     position: relative;
+    touch-action: none;
+}
+
+#arm-canvas-container {
+    touch-action: none;
 }
 
 #anim-axis1, #anim-axis2, #anim-axis3, #anim-axis4, #anim-axis5, #anim-axis6 {
