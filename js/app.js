@@ -51,22 +51,22 @@ function changePage(targetIndex) {
         sim_pauseVideo();
     }
     
-    // 隐藏当前页面
-    currentPage.classList.remove('active');
+    // 先显示目标页面（覆盖当前页面）
+    targetPage.classList.add('active');
+    app.currentPageIndex = targetIndex;
     
-    // 延迟后显示目标页面
+    // 调用页面初始化函数
+    initPage(targetIndex);
+    
+    // 延迟后隐藏当前页面
     setTimeout(function() {
-        targetPage.classList.add('active');
-        app.currentPageIndex = targetIndex;
-        
-        // 调用页面初始化函数
-        initPage(targetIndex);
+        currentPage.classList.remove('active');
         
         // 恢复可切换状态
         setTimeout(function() {
             app.isTransitioning = false;
         }, 400);
-    }, 400);
+    }, 100);
 }
 
 /**
