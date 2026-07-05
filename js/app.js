@@ -276,7 +276,7 @@ document.addEventListener('touchstart', function(event) {
 document.addEventListener('touchmove', function(event) {
     var target = event.target;
     while (target) {
-        if (target.classList && target.classList.contains('page-content')) {
+        if (target.classList && (target.classList.contains('page-content') || target.classList.contains('sim-quiz-overlay'))) {
             return;
         }
         if (target.tagName === 'HTML' || target.tagName === 'BODY') {
